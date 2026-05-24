@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cruz Roja - Prácticas 2da Vuelta</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body class="bg-gray-100 min-h-screen p-4 md:p-8 font-sans">
+
+    <div class="max-w-2xl mx-auto">
+
+        <div class="text-center mb-8">
+            <img src="/images/cruz-roja.png" alt="Logo Cruz Roja Argentina"
+                class="h-32 sm:h-40 mx-auto mb-0 object-contain">
+            <h2 class="text-xl text-gray-700 font-medium mt-0">Tecnicatura Superior en Enfermería</h2>
+            <h3 class="text-lg text-red-600 font-semibold mt-2">Inscripción a Prácticas Profesionalizantes</h3>
+            <span
+                class="inline-block bg-red-100 text-red-800 px-4 py-1 rounded-full font-bold text-sm mt-3 tracking-wide">
+                2DA VUELTA
+            </span>
+        </div>
+
+        <div id="searchCard" class="bg-white p-6 rounded-xl shadow-lg mb-6 border-t-4 border-red-600 transition-all">
+            <h3 class="text-lg font-bold text-gray-800 mb-1">Validación de Identidad</h3>
+            <p class="text-gray-500 mb-5 text-sm">Ingrese su número de documento para verificar su estado en el padrón.
+            </p>
+
+            <form id="searchForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Tu DNI</label>
+                    <input type="text" id="dniInput" required placeholder="Sin puntos ni espacios (Ej: 44178671)"
+                        class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 transition text-lg tracking-wide">
+                </div>
+                <button type="submit"
+                    class="w-full bg-red-600 text-white font-bold py-3.5 rounded-lg hover:bg-red-700 transition shadow-md text-lg">
+                    Verificar mi Estado
+                </button>
+            </form>
+        </div>
+
+        <div id="alumnoDataContainer" class="hidden bg-white p-6 rounded-xl shadow-md mb-6 border border-gray-200">
+            <h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">Datos del Estudiante</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-gray-700 mb-5">
+                <p><strong>Nombre y Apellido:</strong> <br><span id="lblNombre"
+                        class="text-base text-gray-900 font-medium"></span></p>
+                <p><strong>Curso y División:</strong> <br><span id="lblCursoDiv"
+                        class="text-base text-gray-900 font-medium"></span></p>
+                <p class="sm:col-span-2"><strong>Email:</strong> <br><span id="lblEmail"
+                        class="text-base text-gray-900 font-medium"></span></p>
+            </div>
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-3.5 rounded-r-lg">
+                <p class="text-xs text-blue-700 font-bold uppercase tracking-wider mb-1">DESTINO 1RA VUELTA</p>
+                <p id="lblVuelta1" class="text-blue-900 font-semibold text-sm"></p>
+            </div>
+        </div>
+
+        <div id="resultadosContainer" class="hidden">
+            <div id="headerDestinos" class="mb-4 px-2">
+                <h3 class="text-xl font-bold text-gray-800">Elija su destino donde realizará las Prácticas
+                    Profesionalizantes.</h3>
+                <p class="text-gray-600 text-sm mt-1">A continuación se detallan los destinos disponibles para tu curso.
+                    Por favor, elija uno y recuerde que una vez elegido no puede cambiar el destino.</p>
+            </div>
+
+            <div id="hospitalesList" class="space-y-3">
+            </div>
+        </div>
+    </div>
+
+    <div id="registroModal"
+        class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl p-6 max-w-md w-full shadow-2xl">
+            <h2 class="text-xl font-bold text-gray-800 mb-1">Registro de Alumno</h2>
+            <p class="text-sm text-gray-500 mb-4">Tu DNI no figura en el padrón inicial. Completá tus datos para
+                continuar.</p>
+            <form id="registroForm" class="space-y-4">
+                <input type="hidden" id="regDni">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Nombre y Apellido completo</label>
+                    <input type="text" id="regNombre" required
+                        class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-red-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Correo Electrónico</label>
+                    <input type="email" id="regEmail" required
+                        class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-red-500 outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">Año</label>
+                        <select id="regCurso" required
+                            class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-red-500 outline-none">
+                            <option value="2">2do Año</option>
+                            <option value="3">3er Año</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-1">División</label>
+                        <select id="regDivision" required
+                            class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-red-500 outline-none">
+                            <option value="A">División A</option>
+                            <option value="B">División B</option>
+                            <option value="C">División C</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex space-x-3 pt-2">
+                    <button type="button" onclick="cerrarModal()"
+                        class="w-1/3 bg-gray-200 text-gray-700 py-2.5 rounded-lg font-bold hover:bg-gray-300 transition">Cancelar</button>
+                    <button type="submit"
+                        class="w-2/3 bg-red-600 text-white py-2.5 rounded-lg font-bold hover:bg-red-700 transition">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentDni = '';
+
+        document.getElementById('searchForm').addEventListener('submit', async function (event) {
+            event.preventDefault();
+            currentDni = document.getElementById('dniInput').value.trim();
+
+            const alumnoCard = document.getElementById('alumnoDataContainer');
+            const resultadosContainer = document.getElementById('resultadosContainer');
+            const headerDestinos = document.getElementById('headerDestinos');
+            const listaHospitales = document.getElementById('hospitalesList');
+
+            alumnoCard.classList.add('hidden');
+            resultadosContainer.classList.add('hidden');
+
+            try {
+                // Ahora solo pasamos el DNI
+                const response = await fetch(`/api/v1/inscripciones/disponibles?dni=${currentDni}`);
+                const data = await response.json();
+
+                if (!data.existe) {
+                    document.getElementById('regDni').value = currentDni;
+                    document.getElementById('registroModal').classList.remove('hidden');
+                    return;
+                }
+
+                document.getElementById('lblNombre').innerText = data.alumno.nombreApellido;
+                document.getElementById('lblCursoDiv').innerText = `${data.alumno.curso}° Año - División "${data.alumno.division}"`;
+                document.getElementById('lblEmail').innerText = data.alumno.email;
+                document.getElementById('lblVuelta1').innerText = data.destinoVuelta1;
+
+                alumnoCard.classList.remove('hidden');
+                resultadosContainer.classList.remove('hidden');
+                listaHospitales.innerHTML = '';
+
+                if (data.yaInscritoVuelta2) {
+                    // Si ya está inscrito, ocultamos el texto de "Elija su destino"
+                    headerDestinos.classList.add('hidden');
+                    listaHospitales.innerHTML = `
+                        <div class="bg-green-50 border-l-4 border-green-500 p-5 rounded-r-lg shadow-sm">
+                            <p class="text-green-800 font-bold text-lg flex items-center">✓ Tu inscripción está asegurada</p>
+                            <p class="text-green-700 text-sm mt-1 mb-4">Ya seleccionaste tu destino para la 2da Vuelta. No tienes permitido realizar nuevas modificaciones.</p>
+                            <div class="bg-white border border-green-200 p-3.5 rounded-lg shadow-sm">
+                                <p class="text-xs text-green-700 font-bold uppercase tracking-wider mb-1">DESTINO 2DA VUELTA</p>
+                                <p class="text-gray-800 font-semibold text-sm">${data.destinoVuelta2}</p>
+                            </div>
+                        </div>`;
+                    return;
+                }
+
+                // Si no está inscrito, mostramos el texto y las opciones
+                headerDestinos.classList.remove('hidden');
+
+                if (data.hospitalesDisponibles.length === 0) {
+                    listaHospitales.innerHTML = `
+                        <div class="bg-orange-50 border-l-4 border-orange-500 p-4 rounded-r-lg">
+                            <p class="text-orange-700 font-bold">Sin cupos disponibles</p>
+                            <p class="text-orange-600 text-sm">No se registran vacantes libres para tu curso en esta vuelta.</p>
+                        </div>`;
+                    return;
+                }
+
+                data.hospitalesDisponibles.forEach(h => {
+                    const cuposLibres = h.cupoMaximo - h.cupoActual;
+                    const card = document.createElement('div');
+                    card.className = 'bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center hover:shadow-md transition';
+                    card.innerHTML = `
+                        <div>
+                            <h3 class="font-bold text-gray-800 text-lg">${h.nombre}</h3>
+                            <p class="text-sm text-gray-600 font-medium mb-1">${h.turno}</p>
+                            <span class="inline-block bg-green-100 text-green-800 text-xs px-2.5 py-0.5 rounded-full font-bold">
+                                ${cuposLibres} vacantes
+                            </span>
+                        </div>
+                        <button onclick="inscribir('${currentDni}', ${h.id})" class="w-full sm:w-auto mt-3 sm:mt-0 bg-red-600 text-white px-6 py-2.5 rounded-lg hover:bg-red-700 transition font-bold shadow-sm text-sm">
+                            Seleccionar
+                        </button>
+                    `;
+                    listaHospitales.appendChild(card);
+                });
+
+            } catch (error) {
+                Swal.fire('Error', 'No se pudo obtener el estado del alumno.', 'error');
+            }
+        });
+
+        document.getElementById('registroForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const nuevoAlumno = {
+                dni: document.getElementById('regDni').value,
+                curso: parseInt(document.getElementById('regCurso').value),
+                nombreApellido: document.getElementById('regNombre').value.trim(),
+                email: document.getElementById('regEmail').value.trim(),
+                division: document.getElementById('regDivision').value
+            };
+
+            try {
+                const response = await fetch('/api/v1/inscripciones/registrar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(nuevoAlumno)
+                });
+
+                if (response.ok) {
+                    cerrarModal();
+                    await Swal.fire('¡Registro Exitoso!', 'Tus datos fueron guardados.', 'success');
+                    document.getElementById('dniInput').value = nuevoAlumno.dni;
+                    document.getElementById('searchForm').requestSubmit();
+                } else {
+                    Swal.fire('Error', 'No se pudo completar el registro.', 'error');
+                }
+            } catch (error) {
+                Swal.fire('Error crítico', 'Fallo en la comunicación con el servidor.', 'error');
+            }
+        });
+
+        function cerrarModal() {
+            document.getElementById('registroModal').classList.add('hidden');
+            document.getElementById('registroForm').reset();
+        }
+
+        async function inscribir(dni, hospitalId) {
+            const confirmacion = await Swal.fire({
+                title: '¿Confirmar destino?',
+                text: "Verificá bien el horario. Una vez elegido, no podrás cambiarlo.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Sí, inscribirme',
+                cancelButtonText: 'Cancelar'
+            });
+
+            if (!confirmacion.isConfirmed) return;
+
+            try {
+                const params = new URLSearchParams();
+                params.append('dni', dni);
+                params.append('hospitalId', hospitalId);
+                params.append('nroVuelta', 2);
+
+                const response = await fetch('/api/v1/inscripciones/inscribir', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: params
+                });
+
+                if (response.ok) {
+                    await Swal.fire('¡Éxito!', 'Tu inscripción se registró correctamente.', 'success');
+                    document.getElementById('searchForm').requestSubmit();
+                } else {
+                    const errorText = await response.text();
+                    Swal.fire('Atención', errorText, 'error');
+                }
+            } catch (error) {
+                Swal.fire('Error', 'No se pudo procesar la inscripción.', 'error');
+            }
+        }
+    </script>
+</body>
+
+</html>
