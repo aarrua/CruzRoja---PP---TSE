@@ -1,7 +1,5 @@
 package com.cruzroja.inscripcion.controller;
 
-import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cruzroja.inscripcion.dto.EstadoAlumnoDTO;
 import com.cruzroja.inscripcion.entity.Alumno;
-import com.cruzroja.inscripcion.entity.Hospital;
 import com.cruzroja.inscripcion.service.InscripcionService;
 
 import lombok.RequiredArgsConstructor;
