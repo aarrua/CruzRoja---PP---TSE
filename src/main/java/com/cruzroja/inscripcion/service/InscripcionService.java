@@ -46,6 +46,15 @@ public class InscripcionService {
         Alumno alumno = alumnoRepository.findByDni(dni)
                 .orElseThrow(() -> new RuntimeException("Alumno con DNI " + dni + " no encontrado"));
 
+        // 🔥 NUEVA VALIDACIÓN DE SEGURIDAD: Evitar duplicados para la misma vuelta
+        List<Inscripcion> historial = inscripcionRepository.findByAlumnoDni(dni);
+        boolean yaInscrito = historial.stream()
+                .anyMatch(i -> i.getNroVuelta().equals(nroVuelta));
+
+        if (yaInscrito) {
+            throw new RuntimeException("¡Atención! Ya registraste un destino para la vuelta " + nroVuelta);
+        }
+
         // Buscar el hospital
         Hospital hospital = hospitalRepository.findById(hospitalId)
                 .orElseThrow(() -> new RuntimeException("Hospital con ID " + hospitalId + " no encontrado"));
